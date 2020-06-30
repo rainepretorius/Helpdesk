@@ -178,7 +178,7 @@ def need_input():
         for i in file:
             headinglist.append(i)
         headinglist[9] = f'    <h1>Hello {names[email]}.</h1>\n'
-        htmltemplate = open(f"templates\{location}", "w+")
+        htmltemplate = open(f"server/templates\{location}", "w+")
         for j in headinglist:
             if j not in htmltemplate.readline():
                 htmltemplate.writelines(j)

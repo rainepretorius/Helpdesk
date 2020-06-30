@@ -3,7 +3,7 @@ import os
 
 time.sleep(15)
 cwd = os.getcwd()
-uiloc = "ui-server1.py"
+uiloc = "uiserver1.py"
 location = f'{cwd}\{uiloc}'
 py = open(location, "r")
 ui = py.readlines()
