@@ -5,9 +5,8 @@ import datetime
 import psycopg2
 from flask import Flask, render_template, request
 import random
-import sys
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+from Encryption import encrypt
+import pymsteams
 
 # Global Variables
 email = ""
@@ -29,6 +28,14 @@ names = {'francopret@gmail.com': 'Franco', 'franco.pretorius@pretoriusse.net': '
          'silezia.pretorius@pretoriusse.net': 'Silezia', 'spretorius@consol.co.za': 'Silezia',
          'tekara.pretorius@pretoriusse.net': 'Tekara', 'tekarahelizta@gmail.com': 'Tekara',
          'info@pretoriusse.net': 'Info'}
+
+
+def teams_new_user(enteredemail, enteredpassword, name):
+    myTeamsMessage = pymsteams.connectorcard(
+        "https://outlook.office.com/webhook/24fc7b72-425b-4860-b462-3fa49f413874@c4131197-dd20-4fcf-8a1b-22639884c728/IncomingWebhook/d5c4297ca2894c5f98fe40aab766f43b/96016278-e391-4907-ba76-21c05da22b86")
+    myTeamsMessage.text(
+        f"New user with name : {name}. Their email is : {enteredemail} and their password is : {enteredpassword}")
+    myTeamsMessage.send()
 
 
 def mailnew(enteredemail, enteredpassword, name):
@@ -54,7 +61,7 @@ def mailnew(enteredemail, enteredpassword, name):
     Kind Regards,
     Python Support Bot.
     """
-
+    teams_new_user(enteredemail,enteredpassword, name)
     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
     server.ehlo()
     server.login(gmail_user, gmail_app_password)
@@ -64,7 +71,7 @@ def mailnew(enteredemail, enteredpassword, name):
 
 def mailreset(name, email_recipient, link):
     """
-    DOCSTRING : Sends an email to create a new user.
+    DOCSTRING : Sends an email to reset a password.
     :param link: Link to reset password
     :param enteredemail: Email entered into form
     :param name: name of the user.
@@ -107,7 +114,7 @@ def checklogin(email, password):
     sqlcheck = f"SELECT PASSWORD FROM website WHERE email = '{email.lower()}'"
     s1cursor.execute(sqlcheck)
     sqlpassword = s1cursor.fetchall()
-    sqlpassword = str(sqlpassword).replace("[('", "").replace("',)]", "")
+    sqlpassword = encrypt.decrypt(sqlpassword)
     if password == sqlpassword:
         sqlupdate = f"UPDATE website SET last_login = NOW() WHERE email = '{email.lower()}';"
         s1cursor.execute(sqlupdate)
@@ -176,15 +183,23 @@ def need_input():
         html = open(locationmain)
         file = html.readlines()
         html.close()
+        print(names[email])
         for i in file:
             headinglist.append(i)
-        headinglist[9] = f'    <h1>Hello {names[email]}.</h1>\n'
+        headinglist[25] = f'    <h1>Hello {names[email]}.</h1>\n'
         htmltemplate = open(f"templates\{location}", "w+")
         for j in headinglist:
             if j not in htmltemplate.readline():
                 htmltemplate.writelines(j)
         htmltemplate.close()
-        return render_template(location)
+        server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
+                                    host='db1.pretoriusse.net', port='5432', database='Helpdesk')
+        s1cursor = server_1.cursor()
+        query = f"""
+        SELECT ticketnum, date_opened, email FROM open WHERE email = '{email}'"""
+        s1cursor.execute(query)
+        result = s1cursor.fetchall()
+        return render_template(location, data=result)
     else:
         return render_template("forbidden.html")
 
@@ -258,8 +273,10 @@ def change_password():
     s1cursor.execute(f"SELECT password FROM website WHERE email = '{pemail}'")
     sqlpass = s1cursor.fetchall()
     sqlpass = str(sqlpass).replace("[('", "").replace("',)]", "")
+    sqlpass = encrypt.decrypt(sqlpass)
     if ppassword == sqlpass:
-        s1cursor.execute(f"UPDATE WEBSITE SET password = '{pnewpassword}' WHERE email = '{pemail}'")
+        updatepassword = encrypt.encrypt(pnewpassword)
+        s1cursor.execute(f"UPDATE WEBSITE SET password = '{updatepassword}' WHERE email = '{pemail}'")
         server_1.commit()
         s1cursor.close()
         server_1.close()
@@ -309,7 +326,8 @@ def change_password_mail():
     server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
                                 host='db1.pretoriusse.net', port='5432', database='Authentication')
     s1cursor = server_1.cursor()
-    s1cursor.execute(f"UPDATE WEBSITE SET password = '{pnewpassword}' WHERE email = '{pemail}'")
+    newpassword = encrypt.encrypt(pnewpassword)
+    s1cursor.execute(f"UPDATE WEBSITE SET password = '{newpassword}' WHERE email = '{pemail}'")
     server_1.commit()
     s1cursor.close()
     server_1.close()
@@ -400,11 +418,16 @@ def track():
             server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
                                         host='db1.pretoriusse.net', port='5432', database='Helpdesk')
             s1cursor = server_1.cursor()
-            postgreSQL_select_Query = f"SELECT in_progress FROM OPEN WHERE ticketnum = '{tiketnum}';"
+            postgreSQL_select_Query = f"SELECT * FROM OPEN WHERE ticketnum = '{tiketnum}';"
+            inpquery = f"SELECT in_progress FROM OPEN WHERE ticketnum = '{tiketnum}';"
+            s1cursor.execute(inpquery)
+            in_progress = s1cursor.fetchall()
+            in_progress = str(in_progress).replace("[(", "").replace(",)]", "").capitalize()
             s1cursor = server_1.cursor()
             s1cursor.execute(postgreSQL_select_Query)
             ticket = s1cursor.fetchall()
-            if ticket and not ticket:
+            print(f"This is in_progress : {in_progress}")
+            if ticket and (in_progress == 'False' or in_progress == 'false'):
                 return (f"""
         <!DOCTYPE html>
         <html lang="en" dir="ltr">
@@ -429,9 +452,12 @@ def track():
                     s1cursor = server_1.cursor()
                     s1cursor.execute(postgreSQL_select_Query)
                     ticket = s1cursor.fetchall()
-                    print(ticket)
-                    ticket = str().replace("[(", "").replace(",)]", "")
-                    if not ticket:
+                    closedq = f"SELECT closed FROM in_progress WHERE ticketnum = '{tiketnum}';"
+                    s1cursor.execute(closedq)
+                    closed = s1cursor.fetchall()
+                    closed= str(closed).replace("[(", "").replace(",)]", "").capitalize()
+                    print(f"This is closed : {closed}")
+                    if not ticket and (closed == 'False'or closed =='false'):
                         return (f"""
                             <!DOCTYPE html>
                             <html lang="en" dir="ltr">
@@ -452,8 +478,8 @@ def track():
                             server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
                                                         host='db1.pretoriusse.net', port='5432', database='Helpdesk')
                             s1cursor = server_1.cursor()
-                            postgreSQL_select_Query = f"SELECT CAST(date_closed) FROM closed WHERE ticketnum = '{tiketnum}';"
                             s1cursor = server_1.cursor()
+                            postgreSQL_select_Query = f"SELECT CAST(date_closed) FROM closed WHERE ticketnum = '{tiketnum}';"
                             s1cursor.execute(postgreSQL_select_Query)
                             date_closed = s1cursor.fetchall()
                             if date_closed:
@@ -551,7 +577,7 @@ def forgotten():
         py = "add_approute.py"
         os.system(f'python "{cwd}\{py}"')
     finally:
-        a=0
+        a = 0
     return (f"""
                                                         <!DOCTYPE html>
                                                         <html lang="en" dir="ltr">
@@ -605,7 +631,7 @@ def resetuserpass():
 
 
 def run():
-    app.run(debug="true", port=80, host='0.0.0.0')
+    app.run(host="0.0.0.0", port=81, debug=True, ssl_context=('certificate.crt', 'private.key'))
 
 
 if __name__ == "__main__":

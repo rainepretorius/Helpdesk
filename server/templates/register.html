@@ -3,26 +3,24 @@
   <head>
     <meta charset="utf-8">
     <title>Register</title>
-    <link rel="stylesheet" href="/server/static/static/css/master.css">
-    <link rel="icon" href="/server/static/static/images/profile.png">
+    <link rel="stylesheet" href="/static/css/master.css">
+    <link rel="icon" href="/static/images/profile.png">
   </head>
   <body>
-    <form class="frm" action="/registernew" method="post">
-      <label>Enter First Name :</label>
+    <form class="frm" id="formElem" action="/registerneww" method="post" >
       <br>
-      <input type="text" name="Name" value="">
-      <br>
-      <label>Enter Email :</label>
-      <br>
-      <input class="" type="email" name="Email" value="">
-      <br>
-      <label>Enter Password :</label>
-      <br>
-      <input class="" type="text" name="Password" value="">
+      <input class="edit" type="text" name="Name" placeholder="Enter First Name">
       <br>
       <br>
-      <input class="btn" type="submit" value="Register">
+      <input class="edit" type="email" name="Email" placeholder="Enter your email">
+      <br>
+      <br>
+      <input class="edit" type="password" name="Password" placeholder="password">
+      <br>
+      <input class="edit" type="password" name="Password1" placeholder="password">
+      <br>
+      <br>
+      <input class="edit button" id="butn" type="submit" value="Register">
     </form>
-
   </body>
 </html>

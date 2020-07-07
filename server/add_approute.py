@@ -15,7 +15,7 @@ final = []
 for i in ui:
     final.append(i)
 time.sleep(2)
-final[569] = f'@app.route("/{resetlink}")\n'
+final[594] = f'@app.route("/{resetlink}")\n'
 if os.path.isfile(location):
     os.remove(location)
 uiwrite = open(location, "w+")
