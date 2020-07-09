@@ -48,8 +48,8 @@ def mailnew(enteredemail, enteredpassword, name):
     # =============================================================================
     # SET EMAIL LOGIN REQUIREMENTS
     # =============================================================================
-    gmail_user = 'pretoriusspprt@gmail.com'
-    gmail_app_password = 'ybfmeopuajmexkwd'
+    gmail_user = 'email'
+    gmail_app_password = 'thepassword'
     recipientlist = ['raine.pretorius@pretoriusse.net', 'charl.botha@pretoriusse.net', 'tech@pretoriusse.net']
     msg = f"""From: {gmail_user}
     To: {", ".join(recipientlist)}\n
@@ -79,8 +79,8 @@ def mailreset(name, email_recipient, link):
     # =============================================================================
     # SET EMAIL LOGIN REQUIREMENTS
     # =============================================================================
-    gmail_user = 'pretoriusspprt@gmail.com'
-    gmail_app_password = 'ybfmeopuajmexkwd'
+    gmail_user = 'email'
+    gmail_app_password = 'thepassword'
     recipientlist = ['raine.pretorius@pretoriusse.net', email_recipient]
     msg = f"""From: {gmail_user}
     To: {", ".join(recipientlist)}\n
@@ -108,8 +108,8 @@ def checklogin(email, password):
     :param password: Password the user entered into the login form.
     :return: True or False.
     """
-    server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
-                                host='db1.pretoriusse.net', port='5432', database='Authentication')
+    server_1 = psycopg2.connect(user='username', password='thepassword',
+                                host='server', port='XXXX', database='Authentication')
     s1cursor = server_1.cursor()
     sqlcheck = f"SELECT PASSWORD FROM website WHERE email = '{email.lower()}'"
     s1cursor.execute(sqlcheck)
@@ -192,8 +192,8 @@ def need_input():
             if j not in htmltemplate.readline():
                 htmltemplate.writelines(j)
         htmltemplate.close()
-        server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
-                                    host='db1.pretoriusse.net', port='5432', database='Helpdesk')
+        server_1 = psycopg2.connect(user='username', password='thepassword',
+                                    host='server', port='XXXX', database='Helpdesk')
         s1cursor = server_1.cursor()
         query = f"""
         SELECT ticketnum, date_opened, email FROM open WHERE email = '{email}'"""
@@ -267,8 +267,8 @@ def change_password():
             pnewpassword = value
         elif key == "Newpassword1":
             pnewpassword1 = value
-    server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
-                                host='db1.pretoriusse.net', port='5432', database='Authentication')
+    server_1 = psycopg2.connect(user='username', password='thepassword',
+                                host='server', port='XXXX', database='Authentication')
     s1cursor = server_1.cursor()
     s1cursor.execute(f"SELECT password FROM website WHERE email = '{pemail}'")
     sqlpass = s1cursor.fetchall()
@@ -323,8 +323,8 @@ def change_password_mail():
             pemail = value
         elif key == 'Newpassword':
             pnewpassword = value
-    server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
-                                host='db1.pretoriusse.net', port='5432', database='Authentication')
+    server_1 = psycopg2.connect(user='username', password='thepassword',
+                                host='server', port='XXXX', database='Authentication')
     s1cursor = server_1.cursor()
     newpassword = encrypt.encrypt(pnewpassword)
     s1cursor.execute(f"UPDATE WEBSITE SET password = '{newpassword}' WHERE email = '{pemail}'")
@@ -366,8 +366,8 @@ def create_ticket():
             tiketemail = value
         elif key == "Comments":
             comments = value
-    server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
-                                host='db1.pretoriusse.net', port='5432', database='Helpdesk')
+    server_1 = psycopg2.connect(user='username', password='thepassword',
+                                host='server', port='XXXX', database='Helpdesk')
     s1cursor = server_1.cursor()
     postgreSQL_select_Query = f"SELECT help_id FROM OPEN ORDER BY help_id DESC LIMIT 1;"
     s1cursor = server_1.cursor()
@@ -415,8 +415,8 @@ def track():
         if key == "ticketnum":
             tiketnum = value
         try:
-            server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
-                                        host='db1.pretoriusse.net', port='5432', database='Helpdesk')
+            server_1 = psycopg2.connect(user='username', password='thepassword',
+                                        host='server', port='XXXX', database='Helpdesk')
             s1cursor = server_1.cursor()
             postgreSQL_select_Query = f"SELECT * FROM OPEN WHERE ticketnum = '{tiketnum}';"
             inpquery = f"SELECT in_progress FROM OPEN WHERE ticketnum = '{tiketnum}';"
@@ -445,8 +445,8 @@ def track():
         </html>""")
             else:
                 try:
-                    server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
-                                                host='db1.pretoriusse.net', port='5432', database='Helpdesk')
+                    server_1 = psycopg2.connect(user='username', password='thepassword',
+                                                host='server', port='XXXX', database='Helpdesk')
                     s1cursor = server_1.cursor()
                     postgreSQL_select_Query = f"SELECT closed FROM in_progress WHERE ticketnum = '{tiketnum}';"
                     s1cursor = server_1.cursor()
@@ -475,8 +475,8 @@ def track():
                             </html>""")
                     else:
                         try:
-                            server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
-                                                        host='db1.pretoriusse.net', port='5432', database='Helpdesk')
+                            server_1 = psycopg2.connect(user='username', password='thepassword',
+                                                        host='server', port='XXXX', database='Helpdesk')
                             s1cursor = server_1.cursor()
                             s1cursor = server_1.cursor()
                             postgreSQL_select_Query = f"SELECT CAST(date_closed) FROM closed WHERE ticketnum = '{tiketnum}';"
@@ -553,15 +553,15 @@ def forgotten():
         if key == "Email":
             remail = value
     try:
-        server_1 = psycopg2.connect(user='Python', password='VVd%MBK0i@8#86GJibThMi2sE&e*tb',
-                                host='db1.pretoriusse.net', port='5432', database='Authentication')
+        server_1 = psycopg2.connect(user='username', password='thepassword',
+                                host='server', port='XXXX', database='Authentication')
         s1cursor = server_1.cursor()
         s1cursor.execute(f"SELECT * FROM website WHERE email = '{remail}';")
         femail = s1cursor.fetchall()
         print(femail)
         if len(femail) > 0:
             resetlink = str(random.randrange(10000, 100000))
-            emailresetlink = f"http://helpdesk.pretoriusse.net/{resetlink}"
+            emailresetlink = f"https://helpdesk.pretoriusse.net/{resetlink}"
         print(f"Full resetlink : {emailresetlink}")
         mailreset(name=names[remail], email_recipient=remail, link=emailresetlink)
         cwd = os.getcwd()
@@ -593,7 +593,7 @@ def forgotten():
                                                         </html>""")
 
 
-@app.route("/50574")
+@app.route("/4")
 def resetuserpass():
     if os.path.isfile('../email.config'):
         emailconf = open("../email.config")
@@ -631,7 +631,7 @@ def resetuserpass():
 
 
 def run():
-    app.run(host="0.0.0.0", port=81, debug=True, ssl_context=('certificate.crt', 'private.key'))
+    app.run(host="0.0.0.0", port=XXXX, debug=True, ssl_context=('certificate.crt', 'private.key'))
 
 
 if __name__ == "__main__":
