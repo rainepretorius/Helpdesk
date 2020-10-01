@@ -289,11 +289,16 @@ def send_teams_new(ticketnumber,comments1,opened1):
     myTeamsMessage.send()
 
 
-while True:
-    get_tiketnum_open()
-    get_status_open()
-    check_new()
-    check_in_progress()
-    get_tiketnum_in_progress()
-    get_status_in_progress()
-    check_closed()
+def run():
+    while True:
+        get_tiketnum_open()
+        get_status_open()
+        check_new()
+        check_in_progress()
+        get_tiketnum_in_progress()
+        get_status_in_progress()
+        check_closed()
+
+
+if __name__ == "__main__":
+    run()
